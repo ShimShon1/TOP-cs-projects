@@ -40,9 +40,14 @@ class KnightBoard {
     if (from[0] === to[0] && from[1] === to[1]) {
       return `Square found in ${bestPath.length} moves! shortest path was: ${JSON.stringify(bestPath)}`;
     }
+    let visited = {};
     let queue = [...this.graph[from[0]][from[1]]].map(e => {
       return { path: [], edge: e };
     });
+    queue.forEach(v => {
+      visited[String(v.edge)] = true;
+    });
+
     while (!bestPath.length) {
       let e = queue[0];
       //if targed found, end loop
@@ -53,9 +58,13 @@ class KnightBoard {
         //shifting very inefficient, done to practice a fake queue!
         queue.shift();
         queue = queue.concat(
-          this.graph[e.edge[0]][e.edge[1]].map(edge => {
-            return { path: [...e.path, e.edge], edge };
-          })
+          this.graph[e.edge[0]][e.edge[1]]
+            .filter(edge => {
+              return !Boolean(visited[String(edge)]);
+            })
+            .map(edge => {
+              return { path: [...e.path, e.edge], edge };
+            })
         );
       }
     }
@@ -67,4 +76,4 @@ class KnightBoard {
 const Board = new KnightBoard();
 Board.init();
 
-console.log(Board.knightMoves([4, 4], [7, 7]));
+console.log(Board.knightMoves([4, 4], [4, 3]));
